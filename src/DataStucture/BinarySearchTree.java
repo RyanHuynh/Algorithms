@@ -46,6 +46,91 @@ public class BinarySearchTree{
 		}		
 	}
 	
+	//Search for element in our tree
+	public boolean search(int element){
+		if(element == data)
+			return true;
+		else{
+			//If the current node is a leaf node then the element is not in the tree.
+			if(this.isLeaf())
+				return false;
+			else{
+				//Search left tree.
+				if(element < data){
+					if(!this.hasLeft())//No left tree
+						return false;
+					else
+						return this.leftTree.search(element);//Recursive search on left tree.
+				}
+				//Search right tree.
+				else{
+					if(!this.hasRight())
+						return false;
+					else
+						return this.rightTree.search(element);
+				}
+			}
+		}
+	}
+	
+	//Get the element from the tree. Return null if the element does not exist.
+	public BinarySearchTree getElement(int element){
+		if(element == data)
+			return this;
+		else{
+			//If the current node is a leaf node then the element is not in the tree.
+			if(this.isLeaf())
+				return null;
+			else{
+				//Search left tree.
+				if(element < data){
+					if(!this.hasLeft())//No left tree
+						return null;
+					else
+						return this.leftTree.getElement(element);//Recursive search on left tree.
+				}
+				//Search right tree.
+				else{
+					if(!this.hasRight())
+						return null;
+					else
+						return this.rightTree.getElement(element);
+				}
+			}
+		}
+	}
+	//Remove Element from the tree.
+	public void removeElement(int element){
+		//Do a search on the tree to see if the element we want to remove is in the tree.
+		BinarySearchTree item = this.getElement(element);
+		if(item == null)
+			System.out.println("The element " + element + " is not the in the tree.");
+		else{
+			//Check to see if the element is a leaf node tree. In this case, we just have to remove it.
+			if(item.isLeaf())
+				item = null;
+			//Check to see if the element has external tree node ( that is no left or right tree node).
+			else if(!item.hasLeft() || !item.hasRight()){
+				//Do a remove external node on current tree node.
+				BinarySearchTree childNode = null;
+				if(item.hasLeft()){
+					//Replace the element node with its left child node.
+					childNode = item.leftTree;
+					item = childNode;
+				}
+				else if(item.hasRight()){
+					//Replace the element node with its right child node.
+					childNode = item.rightTree;
+					item = childNode;
+				}
+			}
+			//The element has both left and right tree node. 
+			else{
+				//Find the first internal node y that follows element in inorder traversal in tree.
+			}
+		}
+		
+	}
 	/*ULTILITY FUNTIONS*/
 	//Check if the node tree is a leaf.
 	private boolean isLeaf(){
@@ -53,7 +138,7 @@ public class BinarySearchTree{
 	}
 	
 	//Check if the current Node has left child.
-	protected boolean hasLeft(){
+	private boolean hasLeft(){
 		return leftTree != null;
 	}
 	
@@ -77,7 +162,17 @@ public class BinarySearchTree{
 			return 1 + height;
 		}
 	}
-	
+	//Get the first node the follow the input node in inorder traversal.
+	private BinarySearchTree getNextInorderNode(BinarySearchTree input){
+		if(!input.hasRight())
+			return null;
+		else{
+			BinarySearchTree currentNode = input.rightTree;
+			while(currentNode.hasLeft())
+				currentNode = currentNode.leftTree;
+			return currentNode;
+		}
+	}
 	/*TRAVERSAL FUCTIONS*/
 	//Pre-order travel
 	public void preoder(){
@@ -129,5 +224,9 @@ public class BinarySearchTree{
 			ourTree.postoder();
 
 			System.out.println("\nHeight of our tree: " + ourTree.height());
+			
+			System.out.println("'5' is in the tree?:" + ourTree.search(5) );
+			System.out.println("'99' is in the tree?:" + ourTree.search(99) );
+
 		}
 }
