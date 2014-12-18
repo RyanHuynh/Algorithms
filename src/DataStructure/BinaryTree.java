@@ -1,4 +1,4 @@
-package DataStucture;
+package DataStructure;
 
 public class BinaryTree<E> {
 	private E data;
@@ -85,7 +85,9 @@ public class BinaryTree<E> {
 		}
 		System.out.print(data + " ");
 	}
-	
+	public static void main(String[] args){
+		
+	}
 	
 	
 	

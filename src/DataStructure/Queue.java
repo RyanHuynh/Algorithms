@@ -1,4 +1,4 @@
-package DataStucture;
+package DataStructure;
 
 public class Queue {
 	private int[] queue;

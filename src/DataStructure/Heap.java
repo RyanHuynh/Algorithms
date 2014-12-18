@@ -1,6 +1,6 @@
 /*Implement Heap Structure using ArrayList*/
 
-package DataStucture;
+package DataStructure;
 
 import java.util.ArrayList;
 
