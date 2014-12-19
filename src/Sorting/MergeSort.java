@@ -1,5 +1,11 @@
 package Sorting;
 
+/** Merge Sort algorithm implementation
+ * 
+ * @author Ryan Huynh
+ * @version Dec 2014
+ *
+ */
 public class MergeSort extends Sorting{
 	public MergeSort(int sizeOfArray){
 		super(sizeOfArray);
@@ -13,7 +19,12 @@ public class MergeSort extends Sorting{
 		this.setArray(tempArray);
 	}
 	
-	//Divine the array.
+	/**
+	 * Divine part of the algorithm
+	 *
+	 * @param inputArray the input array
+	 * @return int[] divided array.
+	 */
 	private int[] mergeSort(int[] inputArray){
 		if(inputArray.length <= 1)
 			return inputArray;
@@ -36,7 +47,13 @@ public class MergeSort extends Sorting{
 		}
 	}
 	
-	//Conquer the list (Merge)
+	/**
+	 * Compare element in 2 lists then merge then together
+	 *
+	 * @param inputList1 the input list1
+	 * @param inputList2 the input list2
+	 * @return the int[] mergered array.
+	 */
 	private int[] doMerge(int[] inputList1, int[] inputList2){
 		int resultArraySize = inputList1.length + inputList2.length;
 		int[] resultArray = new int[resultArraySize];
@@ -73,7 +90,7 @@ public class MergeSort extends Sorting{
 		return resultArray;
 	}
 	
-	//TESTING
+	/**TESTING*/
 	public static void main(String[] args){
 		
 		System.out.println("Merge Sort:");

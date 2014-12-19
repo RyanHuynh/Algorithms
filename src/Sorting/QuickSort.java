@@ -1,8 +1,13 @@
 package Sorting;
-
 import java.util.ArrayList;
 import java.util.Random;
 
+/** Quick Sort algorithm implementation
+ * 
+ * @author Ryan Huynh
+ * @version Dec 2014
+ *
+ */
 public class QuickSort extends Sorting {
 
 	public QuickSort(int sizeOfArray) {
@@ -17,7 +22,13 @@ public class QuickSort extends Sorting {
 		this.setArray(result);		
 	}
 	
-	//
+	
+	/**
+	 * Quick sort implementation.
+	 *
+	 * @param input the input
+	 * @return the array list
+	 */
 	private ArrayList<Integer> quickSort(ArrayList<Integer> input){
 		if(input.size() <= 1)
 			return input;
@@ -56,7 +67,12 @@ public class QuickSort extends Sorting {
 		}
 	}
 	
-	//Helper function.
+	/**
+	 * Helper function to conver ArrayList into array 
+	 *
+	 * @param input the input
+	 * @return the array list
+	 */
 	private ArrayList<Integer> toArrayList(int[] input){ 
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		for(int i = 0 ; i < input.length; i++){
@@ -64,7 +80,8 @@ public class QuickSort extends Sorting {
 		}
 		return result;
 	}
-	//TESTING
+	
+	/**TESTING*/
 	public static void main (String[] args){
 		QuickSort newQSort = new QuickSort(20);
 		System.out.println("Quick Sort: ");

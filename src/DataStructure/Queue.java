@@ -1,5 +1,11 @@
 package DataStructure;
 
+/** Queue data structure (FIFO) implementation using int[].
+ * 
+ * @author Ryan Huynh
+ * @version Dec 2014
+ *
+ */
 public class Queue {
 	private int[] queue;
 	private int queueSize;
@@ -7,7 +13,11 @@ public class Queue {
 	private int front;
 	private int rear;
 	
-	//Construct a new queue with default size.
+	/**
+	 * Instantiates a new queue.
+	 *
+	 * @param size the size of the queue
+	 */
 	public Queue(int size)
 	{
 		//Add extra slot in the array to make sure rear and front cannot meet when the queue is not empty.
@@ -17,9 +27,9 @@ public class Queue {
 		queueSize = size;
 	}
 	
-	/*SOME BASIC FUNCTIONS FOR OUR QUEUE*/
+	/**SOME BASIC FUNCTIONS FOR OUR QUEUE*/	
 	
-	//Print the item in the queue.
+	/** Print the queue for testing purposes*/
 	public void print(){
 		int tempCount = count;
 		int tempFront = front;
@@ -31,7 +41,11 @@ public class Queue {
 		System.out.println();				
 	}
 	
-	//Check to see if the queue is empty. NOTE: if you didn't want to add extra slot in array, you can check for full array 1st here before comparing rear and front.
+	/**
+	 * Check to see if the queue is empty.
+	 *
+	 * @return true if it is empty, false otherwise.
+	 */
 	private boolean emptyQueue(){
 		if(front == rear){
 			System.out.println("The queue is empty.");
@@ -41,7 +55,11 @@ public class Queue {
 			return false;
 	}
 	
-	//Check to see if the queue is full
+	/**
+	 * Check to see if the queue is full.
+	 *
+	 * @return true if it is full, false otherwise.
+	 */
 	private boolean fullQueue(){
 		if(count == queueSize){
 			System.out.println("The Queue is full.");
@@ -51,17 +69,25 @@ public class Queue {
 			return false;			
 	}
 	
-	
-	//Insert new item to the rear of the queue.
-	public void enqueue(int element){
+	/**
+	 * Enqueue: insert new key to the end of the queue.
+	 *
+	 * @param element the new key
+	 */
+	public void enqueue(int key){
 		if(!fullQueue()){
-			queue[rear] = element;
+			queue[rear] = key;
 			rear = (rear + 1)%(queueSize + 1);
 			count++;
 		}			
 	}
 	
-	//Display front element.
+	
+	/**
+	 * Return the front key of the queue (first element)
+	 *
+	 * @return key
+	 */
 	public int front(){
 		if(!emptyQueue())
 			return queue[front];
@@ -69,7 +95,9 @@ public class Queue {
 			return -1;
 	}
 	
-	//Display front element and remove it from queue
+	/**
+	 * Dequeue: show the front element then remove it from the queue.
+	 */
 	public void dequeue()
 	{
 		if(!emptyQueue()){
@@ -79,7 +107,7 @@ public class Queue {
 		}
 	}
 	
-	//TESTING
+	/**TESTING*/
 	public static void main(String[] args){
 		Queue newQueue = new Queue(5);
 		

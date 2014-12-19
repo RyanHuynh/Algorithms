@@ -10,9 +10,11 @@ package DataStructure;
  */
 public class BinarySearchTree{
 	
-	/*Tree node for our BinarySearchTree*/
-	protected class Node{
-		//Variables for Node.
+	/**Tree Node for our tree.
+	 * For simplicity the data is just Integer.
+	 *
+	 */
+	protected class Node{		
 		private int data, height;
 		private Node leftChild, rightChild, parent;
 		
@@ -161,12 +163,34 @@ public class BinarySearchTree{
 			int newHeight = Math.max(leftChildHeight, rightChildHeight) + 1;
 			this.setHeight(newHeight);
 		}
+		
+		/**
+		 * Replace caller node with the input node.
+		 *
+		 * @param newNode the new node
+		 */
+		protected void replaceWith(Node newNode){
+			//Get parent of call node
+			Node parent = this.getParent();
+			//Caller node is root
+			if(parent == null){
+				root = newNode;
+				newNode.setParent(null);
+			}
+			else{
+				newNode.setParent(parent);
+				//Decide if the caller node is leftChild or rightChild.
+				Node leftChild = parent.getLeftChild();
+				if(leftChild == this)
+					parent.setLeftChild(newNode);
+				else
+					parent.setRightChild(newNode);
+			}
+		}
 	}
 	
-	//Variable for BinarySearchTree
 	private Node root;
-	
-	/*CONSTRUCTORS*/
+	/**CONSTRUCTORS*/
 	/**
 	 * Instantiates a new binary search tree from an array.
 	 *
@@ -183,10 +207,9 @@ public class BinarySearchTree{
 		}
 	}
 	
-	/*SOME COMMON FUNCTION FOR OUR TREE*/
+	/**SOME COMMON FUNCTION FOR OUR TREE*/
 	/**
 	 * Insert new element into our tree. 
-	 * This method acts as interface.
 	 *
 	 * @param value the value
 	 */
@@ -294,24 +317,14 @@ public class BinarySearchTree{
 	}
 	
 	/**
-	 * Removes the element.
-	 * This function acts as interface.
-	 *
-	 * @param element the element
-	 */
-	public void removeElement(int element){
-		this.removeElement(root, element);
-	}
-	
-	/**
 	 * Removes the element from the tree.
 	 *
 	 * @param currentNode the current node
 	 * @param element the element
 	 */
-	private void removeElement(Node currentNode, int element){
+	public void removeElement(int element){
 		//Do a search on the tree to see if the element we want to remove is in the tree.
-		Node removeNode = this.getElement(currentNode, element);
+		Node removeNode = this.getElement(root, element);
 		if(removeNode == null)
 			System.out.println("The element " + element + " is not the in the tree.");
 		else{
@@ -325,17 +338,12 @@ public class BinarySearchTree{
 				if(removeNode.hasLeft()){
 					//Replace the element node with its left child node.
 					childNode = removeNode.getLeftChild();
-					removeNode.setLeftChild(childNode.getLeftChild());
-					removeNode.setRightChild(childNode.getRightChild());
-					removeNode.setData(childNode.getData());
+					removeNode.replaceWith(childNode);
 				}
 				else if(removeNode.hasRight()){
 					//Replace the element node with its right child node.
-					childNode = removeNode.getLeftChild();
-					removeNode.setLeftChild(childNode.getLeftChild());
-					removeNode.setRightChild(childNode.getRightChild());
-					removeNode.setData(childNode.getData());
-					
+					childNode = removeNode.getRightChild();
+					removeNode.replaceWith(childNode);
 				}
 			}
 			//The element has both left and right tree node. 
@@ -343,7 +351,7 @@ public class BinarySearchTree{
 				//Find the first internal node y that follows element in inorder traversal in tree.
 				Node nextInorderNode = this.getNextInorderNode(removeNode);
 				//Now we will replace the data of the remove element with this node
-				removeNode.data = nextInorderNode.data;
+				removeNode.setData(nextInorderNode.getData());
 				//Next we will remove the nextInorderNode (since we already copy data to the remove element).
 				//If it is a leaf node, just remove it.
 				if(nextInorderNode.isLeaf())
@@ -351,22 +359,28 @@ public class BinarySearchTree{
 				else{
 					//We will do remove external node similarly to the one we did earlier.
 					//Notice here we don't need to check for left tree because the nextInorderNode is already left most node.
-					Node childNode = nextInorderNode.rightChild;
+					Node childNode = nextInorderNode.getRightChild();
 					//Replace nextInorderNode with its child
-					nextInorderNode.leftChild = childNode.leftChild;
-					nextInorderNode.rightChild = childNode.rightChild;
-					nextInorderNode.data = childNode.data;
+					nextInorderNode.replaceWith(childNode);
 				}
+			}
+			
+			//Update height of the parent
+			Node currentNode = removeNode.getParent();
+			while(currentNode != null){
+				currentNode.updateHeight();
+				currentNode = currentNode.getParent();
 			}
 		}
 	}
 	
-	/*TRAVERSAL FUCTIONS*/
+	/**TRAVERSAL FUCTIONS*/
 	/**
 	 * Preorder traversal: Visit the root then travel left, right.
 	 */
 	public void preorder(){
-		this.preorder(root);
+		if(root != null)
+			this.preorder(root);
 	}
 	
 	/**
@@ -388,7 +402,8 @@ public class BinarySearchTree{
 	 * Inorder traversal. Visit the left child then root then right child.
 	 */
 	public void inorder(){
-		this.inorder(root);
+		if(root != null)
+			this.inorder(root);
 	}
 	
 	/**
@@ -410,7 +425,8 @@ public class BinarySearchTree{
 	 * Postorder traversal. Visit the left child, then the right child, then root.
 	 */
 	public void postorder(){
-		this.postorder(root);
+		if(root != null)
+			this.postorder(root);
 	}
 	
 	/**
@@ -428,7 +444,7 @@ public class BinarySearchTree{
 		System.out.print(currentNode.getData() + " ");
 	}
 		
-	/*ULTILITY FUNTIONS*/	
+	/**ULTILITY FUNCTIONS*/	
 	/**
 	 * Gets the root node.
 	 *
@@ -454,7 +470,7 @@ public class BinarySearchTree{
 	 * @param inputNode the input node
 	 * @return the first inorder node follow up from input node.
 	 */
-	private Node getNextInorderNode(Node inputNode){
+	protected Node getNextInorderNode(Node inputNode){
 		if(!inputNode.hasRight())
 			return null;
 		else{
@@ -472,12 +488,12 @@ public class BinarySearchTree{
 	 *
 	 * @param inputNode the input node
 	 */
-	private void delete(Node inputNode){
+	protected void delete(Node inputNode){
 		//Get the parent node of this node.
 		Node parent = inputNode.getParent();
 		//If this node doesn't has parent which mean it is a root node.
 		if(parent == null)
-			System.out.println("Cannot delete root node");
+			root = null;
 		else{
 			//Compare it with left and right child of parent.
 			if(parent.getLeftChild() == inputNode)
@@ -525,30 +541,12 @@ public class BinarySearchTree{
 		}
 	}
 	
-	//TESTING
+	/**TESTING*/
 		public static void main(String[] args){		
 			int[] elements = {7,10,5,12,8};
 			BinarySearchTree ourTree = new BinarySearchTree (elements);
-			
-			ourTree.insert(9);
-			ourTree.insert(6);
-			
-			System.out.print("Pre-order travel: ");
-			ourTree.preorder();
-			
-			System.out.print("\nInorder travel: ");
-			ourTree.inorder();
-			
-			System.out.print("\nPostorder travel: ");
-			ourTree.postorder();
-
-			System.out.println("\nHeight of our tree: " + ourTree.getHeight());
-			
-			System.out.println("'5' is in the tree?:" + ourTree.search(5) );
-			System.out.println("'99' is in the tree?:" + ourTree.search(99) );
-			
-			ourTree.removeElement(7);
-			System.out.print("Verify 7 is removed by doing another inorder travel:");
+			ourTree.removeElement(4);
+			//ourTree.removeElement(3);
 			ourTree.inorder();
 
 		}

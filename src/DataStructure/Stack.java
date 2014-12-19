@@ -1,19 +1,31 @@
 package DataStructure;
 
+/** Stack data structure (FILO) implementation using int[].
+ * 
+ * @author Ryan Huynh
+ * @version Dec 2014
+ *
+ */
 public class Stack {
 	private int[] stack;
 	private int topIndex = -1;
 	private int stackSize;
 	
-	//Construct new stack with default size.
+	/**
+	 * Instantiates a new stack.
+	 *
+	 * @param size the default size of the stack.
+	 */
 	public Stack (int size){
 		stack = new int[size];
 		stackSize = size;
 	}
 	
-	/*SOME FUNCTIONS FOR OUR STACKS*/
+	/**SOME FUNCTIONS FOR OUR STACKS*/
 	
-	//Print the item in the stack.
+	/**
+	 * Display the keys in the stack.
+	 */
 	public void print(){
 		for (int i = 0; i <= topIndex; i++)
 		{
@@ -22,7 +34,11 @@ public class Stack {
 		System.out.println();
 	}
 	
-	//Check to see if the stack is empty
+	/**
+	 * Check to see if the stack is empty.
+	 *
+	 * @return true if it is empty, false otherwise.
+	 */
 	private boolean emptyStack(){
 		if(topIndex == -1){
 			System.out.println("The stack is empty.");
@@ -32,7 +48,11 @@ public class Stack {
 			return false;
 	}
 	
-	//Check to see if the stack is full.
+	/**
+	 * Check to see if the stack is full.
+	 *
+	 * @return true if it is empty, false otherwise.
+	 */
 	private boolean fullStack(){
 		if(topIndex == (stackSize - 1)){
 			System.out.println("The stack is full.");
@@ -42,15 +62,23 @@ public class Stack {
 			return false;
 	}
 	
-	//Push item to the top of the list
-	public void push(int element){
+	/**
+	 * Push new key to the top of the stack.
+	 *
+	 * @param element the element
+	 */
+	public void push(int key){
 		if(!fullStack()){
-			stack[topIndex + 1] = element;
+			stack[topIndex + 1] = key;
 			topIndex++;
 		}
 	}
 	
-	//Display top item of the list.
+	/**
+	 * Return the top key of the stack
+	 *
+	 * @return key
+	 */
 	public int top(){
 		if(!emptyStack())
 			return stack[topIndex];
@@ -58,7 +86,9 @@ public class Stack {
 			return -1;
 	}
 	
-	//Display item on the top of the list and remove this item.
+	/**
+	 * Display the top key of the stack then remove it from the stack
+	 */
 	public void pop(){
 		if(!emptyStack()){		
 			System.out.println("The top item(to be removed) is: " + stack[topIndex]);
@@ -66,6 +96,7 @@ public class Stack {
 		}
 	}
 	
+	/**TESTING*/
 	public static void main (String[] args){
 		Stack newStack = new Stack(5);		
 		

@@ -1,5 +1,10 @@
 package Sorting;
 
+/** Selection Sort algorithm implementation
+ * 
+ * @author Ryan Huynh
+ * @version Dec 2014
+ */
 public class SelectionSort extends Sorting{
 	public SelectionSort(int sizeOfArray){
 		super(sizeOfArray);
@@ -33,9 +38,7 @@ public class SelectionSort extends Sorting{
 		}
 	}
 	
-	
-	
-	//TESTING
+	/**TESTING*/
 	public static void main(String[] args){
 		
 		//Selection Sort

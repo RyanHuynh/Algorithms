@@ -1,5 +1,11 @@
 package Sorting;
 
+/** Insertion Sort algorithm implementation
+ * 
+ * @author Ryan Huynh
+ * @version Dec 2014
+ *
+ */
 public class InsertionSort extends Sorting{
 	public InsertionSort(int sizeOfArray){
 		super(sizeOfArray);

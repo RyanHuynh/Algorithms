@@ -1,7 +1,5 @@
 package DataStructure;
 
-import DataStructure.BinarySearchTree.Node;
-
 /**
   * AVL Tree data structure. AVL is extended version of Binary Search Tree where its a height is always logn where n is number of 
   * tree node in the tree.
@@ -20,14 +18,15 @@ public class AVLTree extends BinarySearchTree{
 	 */
 	public AVLTree(int[] inputArray){
 		super(inputArray);
-		
 	}
 	
-	public void insert(int value){
-		Node root = this.getRoot();
-		this.insert(root, value);
-	}
-	public void insert(Node currentNode, int value){
+	/**
+	 * Insert element into the tree.
+	 *
+	 * @param currentNode the current node
+	 * @param value the value
+	 */
+	private void insert(Node currentNode, int value){
 		//Compare the insert value with the current value. 
 		//Travel to left node if the value is less than current value.
 		//Travel to right node of the value is greater than current value.
@@ -37,7 +36,7 @@ public class AVLTree extends BinarySearchTree{
 				Node leftChild = currentNode.getLeftChild();
 				this.insert(leftChild, value);
 				//Check for balance, restructure the tree if needed.
-				this.balance(currentNode, value);
+				this.balance(currentNode);
 				//Update height when new node added
 				currentNode.updateHeight();	
 			}
@@ -52,7 +51,7 @@ public class AVLTree extends BinarySearchTree{
 				Node rightChild = currentNode.getRightChild();
 				this.insert(rightChild, value);
 				//Check for balance, restructure the tree if needed.
-				this.balance(currentNode, value);
+				this.balance(currentNode);
 				//Update height when new node added
 				currentNode.updateHeight();	
 			}
@@ -65,7 +64,67 @@ public class AVLTree extends BinarySearchTree{
 		}		
 	}
 	
-	/**SOME ULTILITY FUNCTION*/
+	/**
+ 	 * Remove element from the tree.
+ 	 * If the node to be removed (w) is an internal node then there are 2 cases:
+ 	 * 		- If one of the children of the node is an external node, then we just replace the node with its sibling.
+ 	 *		- If both children of the node are internal node then we need to find the first internal node (y) that follow w
+ 	 *		  in an Inorder traversal of T. We then copy the value of y to w and remove node y.
+ 	 * @param element element to be removed.
+ 	 */
+	public void removeElement(int element){
+		//Do a search on the tree to see if the element we want to remove is in the tree.
+		Node removeNode = this.getElement(this.getRoot(), element);
+		if(removeNode == null)
+			System.out.println("The element " + element + " is not the in the tree.");
+		else{
+			//Check to see if the element is a leaf node tree. In this case, we just have to remove it.
+			if(removeNode.isLeaf())
+				this.delete(removeNode);
+			//Check to see if the element has external tree node ( that is no left or right tree node).
+			else if(!removeNode.hasLeft() || !removeNode.hasRight()){
+				//Do a remove external node on current tree node.
+				Node childNode = null;
+				if(removeNode.hasLeft()){
+					//Replace the element node with its left child node.
+					childNode = removeNode.getLeftChild();
+					removeNode.replaceWith(childNode);
+				}
+				else if(removeNode.hasRight()){
+					//Replace the element node with its right child node.
+					childNode = removeNode.getRightChild();
+					removeNode.replaceWith(childNode);
+				}
+			}
+			//The element has both left and right tree node. 
+			else{
+				//Find the first internal node y that follows element in inorder traversal in tree.
+				Node nextInorderNode = this.getNextInorderNode(removeNode);
+				//Now we will replace the data of the remove element with this node
+				removeNode.setData(nextInorderNode.getData());
+				//Next we will remove the nextInorderNode (since we already copy data to the remove element).
+				//If it is a leaf node, just remove it.
+				if(nextInorderNode.isLeaf())
+					this.delete(nextInorderNode);
+				else{
+					//We will do remove external node similarly to the one we did earlier.
+					//Notice here we don't need to check for left tree because the nextInorderNode is already left most node.
+					Node childNode = nextInorderNode.getRightChild();
+					//Replace nextInorderNode with its child
+					nextInorderNode.replaceWith(childNode);
+				}
+			}
+			
+			//Update height of the parent. check for height balance and re-balance the tree if needed.
+			Node currentNode = removeNode.getParent();
+			while(currentNode != null){
+				this.balance(currentNode);
+				currentNode.updateHeight();
+				currentNode = currentNode.getParent();
+			}
+		}
+	}
+	
 	/**
 	 * Gets the first unbalanced node. Starting from the current node and going up to its ancestors.
 	 *
@@ -92,7 +151,23 @@ public class AVLTree extends BinarySearchTree{
 			else return this.getFirstUnbalancedNode(parent);
 		}
 	}
-	 private void balance(Node currentNode, int valueInserted){
+	 
+ 	/**
+ 	 * Balance the tree.
+ 	 * This function will check the current node's balance factor (the absolute value of the difference of its children's height)
+ 	 * If the balance factor is higher than > 1, then the current node is unbalanced. We then pick z,y,x nodes where z is the unbalanced node
+ 	 * y is the heavier children of z, and x is heavier child of y (in case both child have the same height then pick the one on the side with parent y)
+ 	 * There are 4 scenarios: 
+ 	 * 		- Left Left Pattern.
+ 	 * 		- Right Right Pattern.
+ 	 * 		- Left Right Pattern.
+ 	 * 		- Right Left Pattern.
+ 	 * We then perform rotate nodes based on the pattern.
+ 	 *
+ 	 * @param currentNode the current node
+ 	 * @param valueInserted the value inserted
+ 	 */
+ 	private void balance(Node currentNode){
 		 int rightChildHeight = -1;
 		 int leftChildHeight = -1;
 		
@@ -106,56 +181,82 @@ public class AVLTree extends BinarySearchTree{
 		 int balanceFactor = Math.abs(leftChildHeight - rightChildHeight);
 		 if(balanceFactor > 1){ //Unbalanced
 			 
-			 //Decide which tyoe of rotation
+			 //Decide which type of rotation
 			 Node z = currentNode;
 			 Node y = null; 
 			 Node x = null;
 			 if(leftChildHeight > rightChildHeight){
 				 y = leftChild;
-				 int leftChildData = leftChild.getData();
+				 Node leftGrandChild = leftChild.getLeftChild();
+				 Node rightGrandChild = leftChild.getRightChild();
+				 int rightGrandChildHeight = -1;
+				 int leftGrandChildHeight = -1;
+				 if(leftGrandChild != null)
+					 leftGrandChildHeight = leftGrandChild.getHeight();
+				 if(rightGrandChild != null)
+					 rightGrandChildHeight = rightGrandChild.getHeight();
 				 
-				 //Left left Case
-				 if(valueInserted < leftChildData){
-					 x = leftChild.getLeftChild();
-					 //Single right rotation
+				 //Left left case
+				 if(leftGrandChildHeight > rightGrandChildHeight){
+					//Single right rotation
 					 this.rightRotate(z, y);
 				 }
-				 
-				 //Left Right Case
-				 else{
-					 x = leftChild.getRightChild();
-					 //Do left rotation first
+				 //Left right case
+				 else if(leftGrandChildHeight < rightGrandChildHeight){
+					 x = rightGrandChild;
+					//Do left rotation first
 					 Node newRoot = this.leftRotate(y, x);
 					 //Then do right rotation
 					 this.rightRotate(z, newRoot);
+				 }
+				 //Left left case. This is when both height are equal (this checked is needed for removal)
+				 else{
+					//Single right rotation
+					 this.rightRotate(z, y);
 				 }
 			 }
 			 else
 			 {
 				 y = rightChild;
-				 int rightChildData = rightChild.getData();
+				 Node leftGrandChild = rightChild.getLeftChild();
+				 Node rightGrandChild = rightChild.getRightChild();
+				 int rightGrandChildHeight = -1;
+				 int leftGrandChildHeight = -1;
+				 if(leftGrandChild != null)
+					 leftGrandChildHeight = leftGrandChild.getHeight();
+				 if(rightGrandChild != null)
+					 rightGrandChildHeight = rightGrandChild.getHeight();
 				 
-				 //Right left Case
-				 if(valueInserted < rightChildData){
-					 x = rightChild.getLeftChild();
-					 //Do right rotation first
+				 //Right left case
+				 if(leftGrandChildHeight > rightGrandChildHeight){
+					 x = leftGrandChild;
+					//Do right rotation first
 					 Node newRoot = this.rightRotate(y, x);
 					 //Do a left rotation
 					 this.leftRotate(z, newRoot);
 				 }
-				 
-				 //Right Right Case
-				 else{
-					 x = rightChild.getRightChild();
+				 //Right right case
+				 else if(leftGrandChildHeight < rightGrandChildHeight){
 					 //Do a single left rotation
+					 this.leftRotate(z, y);
+				 }
+				 //Right right case. This is when both height are equal (this checked is needed for removal)
+				 else{
+					//Single left rotation
 					 this.leftRotate(z, y);
 				 }
 			 }
 		 }
-			 
-	 }
+ 	 }
 	 
-	 private Node leftRotate(Node root, Node newRoot){
+	 /**
+ 	 * Left rotate, move right child of root to become the root, and the old root becomes this new root left child.
+ 	 *
+ 	 * @param root the root
+ 	 * @param newRoot the new root
+ 	 * @return the node
+ 	 */
+ 	private Node leftRotate(Node root, Node newRoot){
 		 Node leftChildOfNewRoot = newRoot.getLeftChild();
 		 Node parentOfRoot = root.getParent();
 		 
@@ -193,7 +294,14 @@ public class AVLTree extends BinarySearchTree{
 		 return newRoot;
 	 }
 	 
-	 private Node rightRotate(Node root, Node newRoot){
+	 /**
+ 	 * Right rotate,  move the left child of the root to become the new root, and the old root becomes the right child of this new root.
+ 	 *
+ 	 * @param root the root
+ 	 * @param newRoot the new root
+ 	 * @return the node
+ 	 */
+ 	private Node rightRotate(Node root, Node newRoot){
 		 Node rightChildOfNewRoot = newRoot.getRightChild();
 		 Node parentOfRoot = root.getParent();
 		 
@@ -230,23 +338,15 @@ public class AVLTree extends BinarySearchTree{
 		 
 		 return newRoot;
 	 }
-	 	/**TESTING*/
+	 
+ 	/**TESTING*/
 	public static void main (String[] args){
 		int[] elements = {7,10,5,12,8};
+		//int[] elements = {1,2,3};
 		AVLTree ourTree = new AVLTree (elements);
 		ourTree.insert(9);
-		ourTree.insert(6);
-		ourTree.insert(13);
-		ourTree.insert(14);
-		ourTree.insert(15);
-		//System.out.println();
-		//Node root = ourTree.getRoot();
-		//Node currentNode = ourTree.getElement(root, 12);
-		//System.out.println(ourTree.getFirstUnbalancedNode(currentNode).getData());
-		
-		
-		//ourTree.removeElement(12);
-		//System.out.print("Verify 10 is removed by doing another inorder travel:");
-		ourTree.inorder();
+		ourTree.removeElement(7);
+		ourTree.removeElement(5);
+		ourTree.preorder();
 	}
 }

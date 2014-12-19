@@ -1,29 +1,47 @@
-/*Implement Heap Structure using ArrayList*/
-
 package DataStructure;
-
 import java.util.ArrayList;
 
+/** Heap Data Structure implementation using ArrayList as container.
+ *  This heap structure will will have first index as smallest value.
+ * 
+ * @author Ryan Huynh
+ * @version Dec 2014
+ */
 public class Heap {
 	private ArrayList<Integer> heap;
 	public Heap(){
 		heap = new ArrayList<Integer>();
 	}
 	
-	//Add new element to our heap
+	/**
+	 * Insert new element to our heap.
+	 * Up-Heap Bubbling when new added element violate heap-order property.
+	 *
+	 * @param value the value
+	 */
 	public void insert(int value){
 		heap.add(value);
 		int lastNodeIndex = heap.size() - 1;
 		upHeapBubbling(lastNodeIndex);
 	}
 	
-	//Find the index of the parent node
+	/**
+	 * Gets the parent index of the input Index.
+	 *
+	 * @param childIndex the child index
+	 * @return the parent index
+	 */
 	private int getParentIndex(int childIndex){
 		//Since array index start at 0.
 		return (childIndex - 1) / 2;
 	}
 	
-	//Up-Heap Bubbling after insertion to make sure Heap qualify the heap property.
+	/**
+	 * Up heap bubbling.
+	 * Swap the input's value with its parent. Up-heap Bubbling stop when it reach root or the parent and its children no longer violate heap-order property.
+	 *
+	 * @param nodeIndex the node index
+	 */
 	private void upHeapBubbling(int nodeIndex){
 		
 		//Stop bubbling if the current node reach root.
@@ -42,7 +60,10 @@ public class Heap {
 		}
 	}
 	
-	//Remove the smallest element of the heap.
+	/**
+	 * Removes the smallest key in the heap (in this structure, it will be the root).
+	 * Down-heap bubbling when removed key violates heap=order property.
+	 */
 	public void removeMin(){
 		//First we need to copy the last element to the root and remove the last element.
 		//Doing so will guarantee the heap qualify complete binary tree property.
@@ -55,12 +76,17 @@ public class Heap {
 		downHeapBubbling(0);
 	}
 	
-	//DownHeap Bubbling after removal to make sure the heap qualify heap property.
+	/**
+	 * Down heap bubbling.
+	 * Swap the parent node with its smallest child. Down-heap bubbling stop when parent and its children no longer violate heap-order property.
+	 *
+	 * @param nodeIndex the node index
+	 */
 	private void downHeapBubbling(int nodeIndex){
 		//Stop bubbling if reach the leaf node.
 		if((nodeIndex * 2 + 1) < heap.size()){
 			int currentValue = heap.get(nodeIndex);
-			int smallerChildIndex = getSmallestChildIndex(nodeIndex);
+			int smallerChildIndex = getSmallerChildIndex(nodeIndex);
 			int childValue = heap.get(smallerChildIndex);
 			
 			//Compare value of current node and child node.
@@ -73,8 +99,14 @@ public class Heap {
 		}
 	}
 	
-	//Get index of the child that has smaller value
-	private int getSmallestChildIndex(int parentIndex){
+	
+	/**
+	 * Return index of the child that has smaller value.
+	 *
+	 * @param parentIndex the parent index
+	 * @return the smaller child index
+	 */
+	private int getSmallerChildIndex(int parentIndex){
 		int leftChildIndex = (parentIndex * 2) + 1;
 		int leftChildValue = heap.get(leftChildIndex);
 		
@@ -87,7 +119,10 @@ public class Heap {
 		//Compare value of the left and right child and return smaller child's index.
 		return (leftChildValue < rightChildValue) ? leftChildIndex : rightChildIndex;
 	}
-	//Print the heap.
+	
+	/**
+	 * Prints the heap for testing purpose.
+	 */
 	public void print(){
 		System.out.print("Our heap is: ");
 		for(int i = 0; i < heap.size(); i++){
@@ -96,9 +131,7 @@ public class Heap {
 		System.out.println();
 	}
 	
-	
-	
-	//TESTING
+	/**TESTING*/
 	public static void main(String[] args){
 		Heap newHeap = new Heap();
 		newHeap.insert(6);
