@@ -68,7 +68,7 @@ public class QuickSort extends Sorting {
 	}
 	
 	/**
-	 * Helper function to conver ArrayList into array 
+	 * Helper function to convert ArrayList into array 
 	 *
 	 * @param input the input
 	 * @return the array list
